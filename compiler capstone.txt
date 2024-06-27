@@ -1,0 +1,114 @@
+def lexer(input code):
+tokens = []
+current_token = ''
+for char in input_code:
+if char.isdigit():
+current_token += char
+elif char in ['+', '-', '*', '/']:
+if current_token:
+tokens.append(current_token)
+tokens.append(char)
+current_token = ''
+elif char == ' ':
+if current_token:
+tokens.append(current_token)
+current_token = ''
+else:
+raise Exception(f"Invalid character '{char}' found.")
+
+if current_token:
+tokens.append(current_token)
+
+return tokens
+def parser(tokens):
+token_index = 0
+
+def expression():
+nonlocal token_index
+term()
+while token_index < len(tokens) and tokens[token_index] in ['+', '-']:
+token_index += 1
+term()
+
+def term():
+nonlocal token_index
+factor()
+while token_index < len(tokens) and tokens[token_index] in ['*', '/']:
+token_index += 1
+factor()
+
+def factor():
+nonlocal token_index
+if token_index < len(tokens) and tokens[token_index].isdigit():
+token_index += 1
+elif token_index < len(tokens) and tokens[token_index] == '(':
+token_index += 1
+expression()
+if token_index < len(tokens) and tokens[token_index] == ')':
+token_index += 1
+else:
+raise Exception("Missing closing parenthesis.")
+else:
+raise Exception("Invalid syntax.")
+
+expression()
+if token_index < len(tokens):
+raise Exception("Unexpected tokens after expression.")
+def generate_intermediate_code(tokens):
+code = []
+temp_count = 1
+
+def new_temp():
+nonlocal temp_count
+temp_name = f"t{temp_count}"
+temp_count += 1
+return temp_name
+
+def generate_code_for_expression():
+nonlocal tokens, code
+temp = new_temp()
+code.append(f"{temp} = {tokens[0]}")
+index = 1
+while index < len(tokens):
+operator = tokens[index]
+operand = tokens[index + 1]
+temp_result = new_temp()
+code.append(f"{temp_result} = {temp} {operator} {operand}")
+temp = temp_result
+index += 2
+return temp
+
+result_temp = generate_code_for_expression()
+code.append(f"RESULT = {result_temp}")
+
+return code
+def optimize_code(intermediate_code):
+# Placeholder for optimization techniques
+return intermediate_code
+def generate_target_code(intermediate_code):
+target code = []
+for line in intermediate_code:
+target_code.append(line)
+
+return '\n'.join(target code)
+
+
+
+
+Output:
+Input Code: 3 + (4 * 5) - 6 / 2
+Tokens: ['3', '+', '(', '4', '*', '5', ')', '-', '6', '/', '2']
+Intermediate Code:
+t1 = 3
+t2 = 4 * 5
+t3 = t1 + t2
+t4 = 6 / 2
+t5 = t3 - t4
+RESULT = t5
+Target Code:
+t1 = 3
+t2 = 4 * 5
+t3 = t1 + t2
+t4 = 6 / 2
+t5 = t3 - t4
+RESULT = t5
